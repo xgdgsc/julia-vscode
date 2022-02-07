@@ -35,6 +35,7 @@
         "onCommand:language-julia.startREPL",
         "onCommand:language-julia.connectREPL",
         "onCommand:language-julia.stopREPL",
+        "onCommand:language-julia.restartREPL",
         "onCommand:language-julia.executeCodeBlockOrSelection",
         "onCommand:language-julia.executeFile",
         "onCommand:language-julia.executeActiveFile",
@@ -122,6 +123,10 @@
             {
                 "command": "language-julia.stopREPL",
                 "title": "Julia: Stop REPL"
+            },
+            {
+                "command": "language-julia.restartREPL",
+                "title": "Julia: Restart REPL"
             },
             {
                 "command": "language-julia.disconnectREPL",
@@ -621,6 +626,10 @@
             {
                 "command": "language-julia.stopREPL",
                 "key": "Alt+J Alt+K"
+            },
+            {
+                "command": "language-julia.restartREPL",
+                "key": "Alt+J Alt+R"
             },
             {
                 "command": "language-julia.changeCurrentEnvironment",
