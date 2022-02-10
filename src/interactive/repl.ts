@@ -918,6 +918,8 @@ async function executeCell(shouldMove: boolean = false) {
     if (cellrange === null) {
         return
     }
+
+    const code = doc.getText(cellrange)
     const module: string = await modules.getModuleForEditor(ed.document, cellrange.start)
 
     await startREPL(true, false)
@@ -968,7 +970,104 @@ async function executeCell(shouldMove: boolean = false) {
             }
         })
     }
+    if (vscode.workspace.getConfiguration('julia').get<boolean>('execution.inlineResultsForCellEvaluation') === true) {
+        let currentPos: vscode.Position = ed.document.validatePosition(new vscode.Position(cellrange.start.line , cellrange.start.character + 1))
+        let lastRange = new vscode.Range(0, 0, 0, 0)
+        let shouldBreak: boolean = false
+        while (currentPos.line <= cellrange.end.line) {
+            const [startPos, endPos, nextPos] = await getBlockRange(getVersionedParamsAtPosition(ed.document, currentPos))
+            const lineEndPos = ed.document.validatePosition(new vscode.Position(endPos.line, Infinity))
+            const curRange = cellrange.intersection(new vscode.Range(startPos, lineEndPos))
+            if (curRange === undefined || curRange.isEqual(lastRange)) {
+                break
+            }
+            lastRange = curRange
+            if (curRange.isEmpty) {
+                continue
+            }
+            currentPos = ed.document.validatePosition(nextPos)
+            const code = doc.getText(curRange)
+            g_eval_queue.push({ed: ed, cellrange: curRange, code: code, module: module}).catch(
+                (err) => {
+                    console.error(err)
+                }).then(success => {
+                if (!success) {
+                    shouldBreak = true
+                    g_eval_queue.kill()
+                }
+            })
+            if (shouldBreak) {
+                break
+            }
+        }
+    } else {
+        const code = doc.getText(cellrange)
+        g_eval_queue.push({ed: ed, cellrange: cellrange, code: code, module: module}).catch(
+            (err) => {
+                console.error(err)
+            }).then(success => {
+            if (!success) {
+                g_eval_queue.kill()
+            }
+        })
+    }
 
+}
+
+
+async function debugRunCell(shouldMove: boolean = false) {
+    telemetry.traceEvent('command-executeCell')
+
+    const ed = vscode.window.activeTextEditor
+    if (ed === undefined) {
+        return
+    }
+
+    const doc = ed.document
+    const selection = ed.selection
+    const cellrange = currentCellRange(ed)
+    if (cellrange === null) {
+        return
+    }
+    const code = doc.getText(cellrange)
+
+    await startREPL(true, false)
+
+    if (shouldMove && ed.selection === selection) {
+        const isJmd = isMarkdownEditor(ed)
+        const nextpos = new vscode.Position(nextCellBorder(doc, cellrange.end.line + 1, true, isJmd) + 1, 0)
+        validateMoveAndReveal(ed, nextpos, nextpos)
+    }
+    const debugCode = 'using Debugger\nbreak_on(:error)\nDebugger.@run begin\n'+code+'\nend'
+    await executeCodeCopyPaste(debugCode,false)
+}
+
+
+async function debugRunCell(shouldMove: boolean = false) {
+    telemetry.traceEvent('command-executeCell')
+
+    const ed = vscode.window.activeTextEditor
+    if (ed === undefined) {
+        return
+    }
+
+    const doc = ed.document
+    const selection = ed.selection
+    const cellrange = currentCellRange(ed)
+    if (cellrange === null) {
+        return
+    }
+    const code = doc.getText(cellrange)
+
+    await startREPL(true, false)
+
+    if (shouldMove && ed.selection === selection) {
+        const isJmd = doc.languageId === 'juliamarkdown'
+        const nextpos = new vscode.Position(nextCellBorder(doc, cellrange.end.line + 1, true, isJmd) + 1, 0)
+        validateMoveAndReveal(ed, nextpos, nextpos)
+    }
+    const debugCode = 'using Debugger\nbreak_on(:error)\nDebugger.@run begin\n'+code+'\nend'
+    await executeCodeCopyPaste(debugCode,false)
 }
 
 async function evaluateBlockOrSelection(shouldMove: boolean = false) {
@@ -1511,6 +1610,7 @@ export function activate(context: vscode.ExtensionContext, compiledProvider, jul
         registerCommand('language-julia.activateFromDir', activateFromDir),
         registerCommand('language-julia.clearRuntimeDiagnostics', clearDiagnostics),
         registerCommand('language-julia.clearRuntimeDiagnosticsByProvider', clearDiagnosticsByProvider),
+        registerCommand('language-julia.debugRunCell', debugRunCell),
         registerCommand('language-julia.clearInlayHints', clearInlayHints),
     )
 
