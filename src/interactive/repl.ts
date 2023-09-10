@@ -4,7 +4,6 @@ import { assert } from 'console'
 import * as net from 'net'
 import { homedir } from 'os'
 import * as path from 'path'
-import { exec } from 'promisify-child-process'
 import { uuid } from 'uuidv4'
 import * as vscode from 'vscode'
 import * as rpc from 'vscode-jsonrpc/node'
@@ -76,7 +75,19 @@ async function stopREPL(onDeactivate=false) {
             const sessionName = parseSessionArgs(config.get('persistentSession.tmuxSessionName'))
             const killSession = await confirmKill()
             if (killSession) {
-                await exec(`tmux kill-session -t ${sessionName}`)
+                const shellPath: string= config.get('persistentSession.shell')
+                const shellArgs: string[] = [<string>config.get('persistentSession.shellExecutionArgument'),`sessionNameSanitized=\`echo "${sessionName}" | sed "s/\\./_/g" \` && tmux kill-session -t $sessionNameSanitized && ${shellPath}`]
+                const env: any = {
+                    JULIA_EDITOR: getEditor()
+                }
+                vscode.window.createTerminal({
+                    name: `Julia REPL killed`,
+                    shellPath:  shellPath,
+                    shellArgs: shellArgs,
+                    isTransient: true,
+                    env: env,
+                    hideFromUser: true,
+                } as any)
             }
         } catch (err) {
             vscode.window.showErrorMessage('Failed to close tmux session: ' + err.stderr)
@@ -206,8 +217,8 @@ async function startREPL(preserveFocus: boolean, showTerminal: boolean = true) {
             shellArgs = [
                 <string>config.get('persistentSession.shellExecutionArgument'),
                 // create a new tmux session, set remain-on-exit to true, and attach; if the session already exists we just attach to the existing session
-                `tmux new -d -s ${sessionName} "${juliaAndArgs}" && tmux set -q remain-on-exit && tmux attach -t ${sessionName} ||
-                tmux send-keys -t ${sessionName}.left ^A ^K ^H '${connectJuliaCode}' ENTER && tmux attach -t ${sessionName}`
+                `sessionNameSanitized=\`echo "${sessionName}" | sed "s/\\./_/g" \` && tmux new -d -s $sessionNameSanitized "${juliaAndArgs}" && tmux set -q remain-on-exit && tmux attach -t $sessionNameSanitized ||
+                tmux send-keys -t $sessionNameSanitized.left ^A ^K ^H '${connectJuliaCode}' ENTER && tmux attach -t $sessionNameSanitized`
             ]
         } else {
             shellPath = juliaExecutable.file
