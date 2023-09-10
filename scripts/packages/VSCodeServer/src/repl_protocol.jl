@@ -82,6 +82,8 @@ end
 JSONRPC.@dict_readable struct GetCompletionsRequestParams <: JSONRPC.Outbound
     line::String
     mod::String
+    lineNum::Int
+    column::Int
 end
 
 struct ParameterInformation
