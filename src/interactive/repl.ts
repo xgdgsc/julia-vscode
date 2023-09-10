@@ -21,6 +21,8 @@ import * as modules from './modules'
 import * as plots from './plots'
 import * as results from './results'
 import { Frame, openFile } from './results'
+import * as fastq from 'fastq'
+import type { queueAsPromised } from 'fastq'
 import { createHash } from 'crypto'
 
 let g_context: vscode.ExtensionContext = null
@@ -32,6 +34,14 @@ let g_terminal: vscode.Terminal = null
 export let g_connection: rpc.MessageConnection = undefined
 
 let g_juliaExecutablesFeature: JuliaExecutablesFeature
+
+type CellEvalTask = {
+    ed: vscode.TextEditor,
+    cellrange: vscode.Range,
+    code: string,
+    module: string
+  }
+let g_eval_queue: queueAsPromised<CellEvalTask> = null
 
 function startREPLCommand() {
     telemetry.traceEvent('command-startrepl')
@@ -840,6 +850,9 @@ function currentCellRange(editor: vscode.TextEditor) {
     return new vscode.Range(startpos, endpos)
 }
 
+async function eval_queue_worker(arg: CellEvalTask): Promise<boolean> {
+    return await evaluate(arg.ed, arg.cellrange, arg.code, arg.module)
+}
 async function executeCell(shouldMove: boolean = false) {
     telemetry.traceEvent('command-executeCell')
 
@@ -857,7 +870,6 @@ async function executeCell(shouldMove: boolean = false) {
     if (cellrange === null) {
         return
     }
-
     const module: string = await modules.getModuleForEditor(ed.document, cellrange.start)
 
     await startREPL(true, false)
@@ -870,6 +882,7 @@ async function executeCell(shouldMove: boolean = false) {
     if (vscode.workspace.getConfiguration('julia').get<boolean>('execution.inlineResultsForCellEvaluation') === true) {
         let currentPos: vscode.Position = ed.document.validatePosition(new vscode.Position(cellrange.start.line , cellrange.start.character + 1))
         let lastRange = new vscode.Range(0, 0, 0, 0)
+        let shouldBreak: boolean = false
         while (currentPos.line <= cellrange.end.line) {
             const [startPos, endPos, nextPos] = await getBlockRange(getVersionedParamsAtPosition(ed.document, currentPos))
             const lineEndPos = ed.document.validatePosition(new vscode.Position(endPos.line, Infinity))
@@ -883,16 +896,31 @@ async function executeCell(shouldMove: boolean = false) {
             }
             currentPos = ed.document.validatePosition(nextPos)
             const code = doc.getText(curRange)
-
-            const success = await evaluate(ed, curRange, code, module)
-            if (!success) {
+            g_eval_queue.push({ed: ed, cellrange: curRange, code: code, module: module}).catch(
+                (err) => {
+                    console.error(err)
+                }).then(success => {
+                if (!success) {
+                    shouldBreak = true
+                    g_eval_queue.kill()
+                }
+            })
+            if (shouldBreak) {
                 break
             }
         }
     } else {
         const code = doc.getText(cellrange)
-        await evaluate(ed, cellrange, code, module)
+        g_eval_queue.push({ed: ed, cellrange: cellrange, code: code, module: module}).catch(
+            (err) => {
+                console.error(err)
+            }).then(success => {
+            if (!success) {
+                g_eval_queue.kill()
+            }
+        })
     }
+
 }
 
 async function evaluateBlockOrSelection(shouldMove: boolean = false) {
@@ -909,7 +937,7 @@ async function evaluateBlockOrSelection(shouldMove: boolean = false) {
     const selections = editor.selections.slice()
 
     await startREPL(true, false)
-
+    let shouldBreak: boolean = false
     for (const selection of selections) {
         let range: vscode.Range = null
         let nextBlock: vscode.Position = null
@@ -945,10 +973,16 @@ async function evaluateBlockOrSelection(shouldMove: boolean = false) {
         setTimeout(() => {
             editor.setDecorations(tempDecoration, [])
         }, 200)
-
-        const success = await evaluate(editor, range, text, module)
-
-        if (!success) {
+        g_eval_queue.push({ed: editor, cellrange: range, code: text, module: module}).catch(
+            (err) => {
+                console.error(err)
+            }).then(success => {
+            if (!success) {
+                shouldBreak = true
+                g_eval_queue.kill()
+            }
+        })
+        if (shouldBreak) {
             break
         }
     }
@@ -1315,6 +1349,7 @@ export function activate(context: vscode.ExtensionContext, compiledProvider, jul
     g_juliaExecutablesFeature = juliaExecutablesFeature
 
     g_compiledProvider = compiledProvider
+    g_eval_queue = fastq.promise(g_context, eval_queue_worker, 1)
 
     context.subscriptions.push(
         // listeners
