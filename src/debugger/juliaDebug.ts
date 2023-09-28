@@ -117,7 +117,7 @@ export class JuliaDebugSession extends LoggingDebugSession {
             { filter: 'error', label: 'Uncaught Exceptions', default: true },
             { filter: 'throw', label: 'All Exceptions', default: false }
         ]
-
+        response.body.supportsRestartRequest = false
         this.sendResponse(response)
     }
 
