@@ -663,7 +663,7 @@ function stripMarkdown(code: string) {
     let out = ''
     let isJulia = false
     for (const line of code.split('\n')) {
-        if (/^```({?julia|@example|@setup)/.test(line)) {
+        if (/^```({?julia|@example|@setup|@repl)/.test(line)) {
             isJulia = true
             out += '\n'
             continue
@@ -751,7 +751,7 @@ async function getBlockRange(params: VersionedTextDocumentPositionParams): Promi
             vscode.window.showErrorMessage(err.message)
         } else {
             console.error(err)
-            vscode.window.showErrorMessage('Error while communicating with the LS. Check Outputs > Julia Language Server for additional information.')
+            vscode.window.showErrorMessage('Error while communicating with the LS. Check Output > Julia Language Server for additional information.')
         }
         return zeroReturn
     }
@@ -777,7 +777,7 @@ let g_cellDelimiters = [
 function isCellBorder(s: string, isStart: boolean, isJmd: boolean) {
     if (isJmd) {
         if (isStart) {
-            return /^```({?julia|@example|@setup)/.test(s)
+            return /^```({?julia|@example|@setup|@repl)/.test(s)
         } else {
             return /^```(?!\w)/.test(s)
         }

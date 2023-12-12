@@ -42,7 +42,7 @@ function fix_displays(; is_repl=false)
     pushdisplay(InlineDisplay(is_repl))
 end
 
-function with_no_default_display(f; allow_inline = false)
+function with_no_default_display(f; allow_inline=false)
     stack = copy(Base.Multimedia.displays)
     filter!(Base.Multimedia.displays) do d
         !(d isa REPL.REPLDisplay || d isa TextDisplay || (!allow_inline && d isa InlineDisplay))
@@ -55,11 +55,17 @@ function with_no_default_display(f; allow_inline = false)
     end
 end
 
+
 function sendDisplayMsg(kind, data; startLine=-1, startColumn=-1, endLine=-1, endColumn=-1, filename="", codeHash="")
-    JSONRPC.send_notification(conn_endpoint[], "display", Dict{String,Any}(
+    msg = Dict{String,Any}(
         "kind" => kind, "data" => data, "startLine" => startLine, "startColumn" => startColumn,
-        "endLine" => endLine, "endColumn" => endColumn, "filename" => filename, "codeHash" => codeHash))
-    JSONRPC.flush(conn_endpoint[])
+        "endLine" => endLine, "endColumn" => endColumn, "filename" => filename, "codeHash" => codeHash)
+    try
+        JSONRPC.send_notification(conn_endpoint[], "display", msg)
+        JSONRPC.flush(conn_endpoint[])
+    catch
+        maybe_queue_notification!("display", msg) || rethrow()
+    end
 end
 
 function persistPlot(d::InlineDisplay, mime::String, payload::String)
@@ -219,6 +225,9 @@ function Base.display(d::InlineDisplay, x)
     if DIAGNOSTICS_ENABLED[] && showable(DIAGNOSTIC_MIME, x)
         return display(d, DIAGNOSTIC_MIME, x)
     end
+    if INLAY_HINTS_ENABLED[] && showable(INLAY_HINTS_MIME, x)
+        return display(d, INLAY_HINTS_MIME, x)
+    end
     if PLOT_PANE_ENABLED[]
         for mime in DISPLAYABLE_MIMES
             if showable(mime, x)
@@ -227,9 +236,6 @@ function Base.display(d::InlineDisplay, x)
         end
     else
         return with_no_default_display(() -> display(x))
-    end
-    if INLAY_HINTS_ENABLED[] && showable(INLAY_HINTS_MIME, x)
-        return display(d, INLAY_HINTS_MIME, x)
     end
 
     throw(MethodError(display, (d, x)))

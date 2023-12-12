@@ -43,7 +43,13 @@ export class JuliaExecutable {
                     '--history-file=no',
                     '-e',
                     'println(Sys.BINDIR)'
-                ]
+                ],
+                {
+                    env: {
+                        ...process.env,
+                        JULIA_VSCODE_INTERNAL: '1',
+                    }
+                }
             )
 
             this._baseRootFolderPath = path.normalize(path.join(result.stdout.toString().trim(), '..', 'share', 'julia', 'base'))
@@ -99,7 +105,16 @@ export class JuliaExecutablesFeature {
                     parsedArgs = argv.slice(1)
                 }
             }
-            const { stdout, } = await execFile(parsedPath, [...parsedArgs, '--version'])
+            const { stdout, } = await execFile(
+                parsedPath,
+                [...parsedArgs, '--version'],
+                {
+                    env: {
+                        ...process.env,
+                        JULIA_VSCODE_INTERNAL: '1',
+                    }
+                }
+            )
 
             const versionStringFromJulia = stdout.toString().trim()
 
@@ -183,6 +198,8 @@ export class JuliaExecutablesFeature {
         }
         else if (process.platform === 'darwin') {
             pathsToSearch = ['julia',
+                path.join(homedir, 'Applications', 'Julia-1.10.app', 'Contents', 'Resources', 'julia', 'bin', 'julia'),
+                path.join('/', 'Applications', 'Julia-1.10.app', 'Contents', 'Resources', 'julia', 'bin', 'julia'),
                 path.join(homedir, 'Applications', 'Julia-1.9.app', 'Contents', 'Resources', 'julia', 'bin', 'julia'),
                 path.join('/', 'Applications', 'Julia-1.9.app', 'Contents', 'Resources', 'julia', 'bin', 'julia'),
                 path.join(homedir, 'Applications', 'Julia-1.8.app', 'Contents', 'Resources', 'julia', 'bin', 'julia'),
@@ -213,7 +230,7 @@ export class JuliaExecutablesFeature {
     async tryJuliaup() {
         this.usingJuliaup = false
         try {
-            const { stdout, } = await execFile('juliaup', ['api', 'getconfig1'])
+            const { stdout, } = await execFile('juliaup', ['api', 'getconfig1'], {shell: process.platform === 'win32' ? false : true})
 
             const apiResult = stdout.toString().trim()
 
