@@ -5,14 +5,28 @@ All notable changes to the Julia extension will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+## [1.64.0] - 2023-12-12
+### Fixed
+* Properly substitute VS Code variables when no workspace folders are open ([#3490](https://github.com/julia-vscode/julia-vscode/pull/3490))
+
+## [1.63.0] - 2023-12-12
+### Fixed
+* Syntax highlighting for interpolated generators and comprehensions ([#268](https://github.com/JuliaEditorSupport/atom-language-julia/pull/268))
+* Syntax highlighting for adjacent interpolated variables ([#269](https://github.com/JuliaEditorSupport/atom-language-julia/pull/269))
+* Syntax highlighting for escaped characters in `ref` strings and `var` symbols ([#270](https://github.com/JuliaEditorSupport/atom-language-julia/pull/270))
+
+## [1.62.0] - 2023-12-12
 ### Added
-* Support additional VSCode variables in `environmentPath` ([#3477](https://github.com/julia-vscode/julia-vscode/pull/3477))
+* Support additional VS Code variables in the `julia.environmentPath` and `julia.persistentSession.tmuxSessionName` settings ([#3477](https://github.com/julia-vscode/julia-vscode/pull/3477), [#3489](https://github.com/julia-vscode/julia-vscode/pull/3489))
 
 ### Fixed
 * Table headers no longer show `null` if no column label existss ([#3486](https://github.com/julia-vscode/julia-vscode/pull/3486))
+* Workspace directories with spaces in the path are now handled more correctly ([#3489](https://github.com/julia-vscode/julia-vscode/pull/3489))
+* Persistent sessions now use the shell specified in `julia.persistentSession.shell` inside of the tmux session as well ([#3489](https://github.com/julia-vscode/julia-vscode/pull/3489))
 
 ### Changed
 * The default keybinding for the `Julia: Clear All Inline Results` command changed from `Ctrl+I Ctrl+C` to `Alt+I Alt+C` to prevent a clash with the Copilot Chat extension ([#3487](https://github.com/julia-vscode/julia-vscode/pull/3487))
+* The `julia.persistentSession.shellExecutionArgument` setting now accepts a space-separated list of arguments ([#3489](https://github.com/julia-vscode/julia-vscode/pull/3489))
 
 ## [1.61.0] - 2023-11-30
 ### Added
