@@ -277,19 +277,16 @@ async function startREPL(preserveFocus: boolean, showTerminal: boolean = true) {
         env: env,
     })
 
-        g_terminal.show(preserveFocus)
-        await juliaIsConnectedPromise.wait()
-        if (Boolean(config.get('persistentSession.enabled'))) {
-            const editors = vscode.window.visibleTextEditors
-            for (const ed of editors) {
-                if (ed !== undefined) {
-                    await load_results(ed)
-                }
+    g_terminal.show(preserveFocus)
+    await juliaIsConnectedPromise.wait()
+    if (Boolean(config.get('persistentSession.enabled'))) {
+        const editors = vscode.window.visibleTextEditors
+        for (const ed of editors) {
+            if (ed !== undefined) {
+                await load_results(ed)
             }
-
         }
-    } else if (showTerminal) {
-        g_terminal.show(preserveFocus)
+
     }
 }
 
