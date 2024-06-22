@@ -277,11 +277,15 @@ function plotPanelOnMessage(msg) {
     }
 }
 
-export function showPlotPane() {
+export function showPlotPane(lazy = false) {
     telemetry.traceEvent('command-showplotpane')
     const plotTitle = makeTitle()
 
     if (!g_plotPanel) {
+        if (lazy) {
+            return
+        }
+
         g_plotPanel = vscode.window.createWebviewPanel(
             'jlplotpane',
             plotTitle,
@@ -322,7 +326,7 @@ export function showPlotPane() {
     } else {
         g_plotPanel.title = plotTitle
         g_plotPanel.webview.html = getPlotPaneContent(g_plotPanel.webview)
-        if (!g_plotPanel.visible) {
+        if (!lazy && !g_plotPanel.visible) {
             g_plotPanel.reveal(g_plotPanel.viewColumn, true)
         }
     }
@@ -340,16 +344,16 @@ function makeTitle() {
 
 function enablePlotPane() {
     const conf = vscode.workspace.getConfiguration('julia')
-    conf.update('usePlotPane', true, true)
+    conf.update('usePlotPane', true, vscode.ConfigurationTarget.Global)
 }
 
 function disablePlotPane() {
     const conf = vscode.workspace.getConfiguration('julia')
-    conf.update('usePlotPane', false, true)
+    conf.update('usePlotPane', false, vscode.ConfigurationTarget.Global)
 }
 
-function updatePlotPane() {
-    showPlotPane()
+function updatePlotPane(lazy = false) {
+    showPlotPane(lazy)
 }
 
 export function showPlotForSelectionEvent(event: vscode.TextEditorSelectionChangeEvent ) {
@@ -418,7 +422,7 @@ export function plotPaneDel() {
         if (g_currentPlotIndex > g_plots.length - 1) {
             g_currentPlotIndex = g_plots.length - 1
         }
-        updatePlotPane()
+        updatePlotPane(true)
         for (const key of Array.from(g_endLine_plotIndex_map.keys())) {
             for (const endLineKey of Array.from(g_endLine_plotIndex_map.get(key).keys())) {
                 const plotMetaData = g_endLine_plotIndex_map.get(key).get(endLineKey)
@@ -444,7 +448,7 @@ export function plotPaneDelAll() {
     if (g_plots.length > 0) {
         g_plots.splice(0, g_plots.length)
         g_currentPlotIndex = 0
-        updatePlotPane()
+        updatePlotPane(true)
     }
     g_endLine_plotIndex_map.clear()
 }

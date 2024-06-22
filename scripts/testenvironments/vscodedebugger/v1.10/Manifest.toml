@@ -1,6 +1,6 @@
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.0"
+julia_version = "1.10.4"
 manifest_format = "2.0"
 project_hash = "74b74cb7e453f9bc83670bc3287d524c174af56c"
 
@@ -49,7 +49,17 @@ uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 
 [[deps.VSCodeDebugger]]
-deps = ["Base64", "Dates", "InteractiveUtils", "Mmap", "REPL", "Random", "Sockets", "UUIDs", "Unicode"]
+deps = [
+    "Base64",
+    "Dates",
+    "InteractiveUtils",
+    "Mmap",
+    "REPL",
+    "Random",
+    "Sockets",
+    "UUIDs",
+    "Unicode",
+]
 path = "../../../packages/VSCodeDebugger"
 uuid = "a80fdaa1-3292-45d6-85e6-157a63518481"
 version = "0.1.0"

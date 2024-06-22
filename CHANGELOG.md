@@ -5,6 +5,57 @@ All notable changes to the Julia extension will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+### Changed
+- Drop support for pre 1.6 Julia versions in the language server ([#3610](https://github.com/julia-vscode/julia-vscode/pull/3610))
+
+## [1.77.0] - 2024-04-24
+### Fixed
+* Add Julia 1.11 support ([#3583](https://github.com/julia-vscode/julia-vscode/pull/3583), [#388](https://github.com/julia-vscode/CSTParser.jl/pull/388))
+* `LoadError`s are not unconditionally unwrapped when displayed ([#3592](https://github.com/julia-vscode/julia-vscode/pull/3592))
+* Internals are now more reliably excluded from stacktraces ([#3593](https://github.com/julia-vscode/julia-vscode/pull/3593))
+* Stacktraces printing now works on Julia 1.12 ([#3595](https://github.com/julia-vscode/julia-vscode/pull/3595))
+
+### Changed
+* Items in the environment selector are now sorted more naturally and Pluto-internal environments are filtered out ([#3594](https://github.com/julia-vscode/julia-vscode/pull/3594))
+
+## [1.76.0] - 2024-04-05
+### Fixed
+* Deleting plots stops opening the plot pane if it's not visible ([#3564](https://github.com/julia-vscode/julia-vscode/pull/3564))
+* Stopped infinite recursion when the global logger got incorrectly set to an instance of `VSCodeLogger` ([#3572](https://github.com/julia-vscode/julia-vscode/pull/3572))
+* Changes to how Jupyter Notebook Metadata is accessed ([#3569](https://github.com/julia-vscode/julia-vscode/pull/3569))
+* Fixed an issue with Symbolics.jl sometimes getting misanalyzed, which would end up crashing the language server ([#383](https://github.com/julia-vscode/StaticLint.jl/pull/383))
+* `@kwdef mutable struct` with `const` fields are now analyzed correctly ([#384](https://github.com/julia-vscode/StaticLint.jl/pull/384))
+* More operators are now correctly highlighted ([#279](https://github.com/JuliaEditorSupport/atom-language-julia/pull/279))
+
+## [1.74.0] - 2024-03-07
+### Fixed
+* The `Always copy code` option should now work properly on remote machines ([3559](https://github.com/julia-vscode/julia-vscode/pull/3559))
+* Handle `\r` characters for improved rendering of progress bars and the like in Notebook Outputs ([3561](https://github.com/julia-vscode/julia-vscode/issues/3561))
+
+## [1.73.0] - 2024-02-20
+### Fixed
+* Fixed an edge case of `where` parsing in the presence of curlies and operators ([#384](https://github.com/julia-vscode/CSTParser.jl/pull/384))
+
+## [1.72.0] - 2024-02-16
+### Fixed
+* Static inlay hints are now automatically disabled when runtime hints are displayed ([#3539](https://github.com/julia-vscode/julia-vscode/pull/3539))
+* Stackoverflow in `package_callbacks` ([#3546](https://github.com/julia-vscode/julia-vscode/issues/3546))
+* `UndefVarError` on starting Julia Test Server ([#3541](https://github.com/julia-vscode/julia-vscode/pull/3541))
+* Even if loading a Julia vs-code component fails the Julia LOAD_PATH does not get poluted.
+
+### Changed
+* Static inlay hints are now disabled by default ([#3539](https://github.com/julia-vscode/julia-vscode/pull/3539))
+
+## [1.70.0] - 2024-02-10
+### Added
+* Added static inlay hints for variable definitions and function parameters ([#3519](https://github.com/julia-vscode/julia-vscode/pull/3519), [#1077](https://github.com/julia-vscode/LanguageServer.jl/pull/1077))
+
+### Changed
+* Setting id for runtime inlay hints changed to `julia.inlayHints.runtime.enabled` ([#3519](https://github.com/julia-vscode/julia-vscode/pull/3519))
+
+### Fixed
+* Only update notebook metadata when it has actually changed ([#3530](https://github.com/julia-vscode/julia-vscode/pull/3530))
+
 ## [1.66.0] - 2024-01-09
 ### Changed
 * Default of `julia.persistentSession.closeStrategy` changed to overridable ([#3494](https://github.com/julia-vscode/julia-vscode/pull/3494))

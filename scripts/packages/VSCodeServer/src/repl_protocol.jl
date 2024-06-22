@@ -30,7 +30,7 @@ JSONRPC.@dict_readable struct ReplRunCodeRequestReturn <: JSONRPC.Outbound
     all::String
     stackframe::Union{Nothing,Vector{Frame}}
 end
-ReplRunCodeRequestReturn(inline, all) = ReplRunCodeRequestReturn(inline, all, nothing)
+ReplRunCodeRequestReturn(inline, all=inline) = ReplRunCodeRequestReturn(inline, all, nothing)
 
 JSONRPC.@dict_readable struct ReplLoadPersistParams <: JSONRPC.Outbound
     filename::String

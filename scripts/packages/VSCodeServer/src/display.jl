@@ -81,7 +81,20 @@ function persistPlot(d::InlineDisplay, mime::String, payload::String)
     end
 end
 
-function Base.display(d::InlineDisplay, m::MIME, x)
+function persistPlot(d::InlineDisplay, mime::String, payload::String)
+    persistOutputFilePath = d.filename * ".vsjlplt"
+    jsonD = Dict()
+    if isfile(persistOutputFilePath)
+        jsonD = JSON.parsefile(persistOutputFilePath)
+    end
+    jsonD[string(d.endLine)] = Dict("startLine" => d.startLine, "startCol" => d.startColumn, "endLine" => d.endLine, "endCol" => d.endColumn,
+        "mime" => mime, "payload" => payload, "code_hash" => d.codeHash)
+    open(persistOutputFilePath, "w") do io
+        JSON.print(io, jsonD)
+    end
+end
+
+function Base.display(d::InlineDisplay, m::MIME, @nospecialize(x))
     if !PLOT_PANE_ENABLED[]
         with_no_default_display(() -> display(m, x))
     else
@@ -221,7 +234,7 @@ function can_display(x)
     return is_table_like(x)
 end
 
-function Base.display(d::InlineDisplay, x)
+function Base.display(d::InlineDisplay, @nospecialize(x))
     if DIAGNOSTICS_ENABLED[] && showable(DIAGNOSTIC_MIME, x)
         return display(d, DIAGNOSTIC_MIME, x)
     end

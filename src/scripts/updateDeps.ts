@@ -1,4 +1,4 @@
-import * as download from 'download'
+import download from 'download'
 import { promises as fs } from 'fs'
 import * as path from 'path'
 import * as process from 'process'
@@ -87,8 +87,8 @@ async function main() {
         await cp.exec('git fetch')
         await cp.exec('git fetch --tags')
         const tags = await cp.exec('git tag', { cwd: path.join(process.cwd(), `scripts/packages/${pkg}`) })
-
-        const newestTag = tags.stdout.toString().split(/\r?\n/).map(i => { return { original: i, parsed: semver.valid(i) } }).filter(i => i.parsed !== null).sort((a, b) => semver.compare(b.parsed, a.parsed))[0]
+        const tagsSorted = tags.stdout.toString().split(/\r?\n/).map(i => { return { original: i, parsed: semver.valid(i) } }).filter(i => i.parsed !== null).sort((a, b) => semver.compare(b.parsed, a.parsed))
+        const newestTag = tagsSorted[0]
 
         console.log(`Updating ${pkg} to latest tag: ${newestTag.original}`)
         await cp.exec(`git checkout ${newestTag.original}`, { cwd: path.join(process.cwd(), `scripts/packages/${pkg}`) })
@@ -104,7 +104,7 @@ async function main() {
     await fs.rm(path.join(process.cwd(), 'scripts/testenvironments/debugadapter'), { recursive: true })
     await fs.rm(path.join(process.cwd(), 'scripts/testenvironments/vscodedebugger'), { recursive: true })
     await fs.rm(path.join(process.cwd(), 'scripts/testenvironments/vscodeserver'), { recursive: true })
-    for (const v of ['1.0', '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9', '1.10']) {
+    for (const v of ['1.0', '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9', '1.10', '1.11']) {
         console.log(`Adding Julia ${v} via juliaup`)
         try {
             await cp.exec(`juliaup add ${v}`)
@@ -113,11 +113,12 @@ async function main() {
         }
 
         console.log(`Updating environments for Julia ${v}...`)
-        const env_path_ls = path.join(process.cwd(), 'scripts/environments/languageserver', `v${v}`)
-        await fs.mkdir(env_path_ls, { recursive: true })
-        await cp.exec(`julia "+${v}" --project=. ${path.join(process.cwd(), 'src/scripts/juliaprojectcreatescripts/create_ls_project.jl')}`, { cwd: env_path_ls })
 
-        if(new semver.SemVer(`${v}.0`)>=new semver.SemVer('1.6.0')) {
+        if(semver.gte(new semver.SemVer(`${v}.0`), new semver.SemVer('1.6.0'))) {
+            const env_path_ls = path.join(process.cwd(), 'scripts/environments/languageserver', `v${v}`)
+            await fs.mkdir(env_path_ls, { recursive: true })
+            await cp.exec(`julia "+${v}" --project=. ${path.join(process.cwd(), 'src/scripts/juliaprojectcreatescripts/create_ls_project.jl')}`, { cwd: env_path_ls })
+
             const env_path_pkgdev = path.join(process.cwd(), 'scripts/environments/pkgdev', `v${v}`)
             await fs.mkdir(env_path_pkgdev, { recursive: true })
             await cp.exec(`julia "+${v}" --project=. ${path.join(process.cwd(), 'src/scripts/juliaprojectcreatescripts/create_pkgdev_project.jl')}`, { cwd: env_path_pkgdev })
@@ -149,7 +150,7 @@ async function main() {
     }
 
     try {
-        await cp.exec(`juliaup add alpha`)
+        await cp.exec(`juliaup add nightly`)
     }
     catch (err) {
     }
@@ -158,13 +159,11 @@ async function main() {
     await fs.mkdir(path.join(process.cwd(), 'scripts/environments/languageserver/fallback'), { recursive: true })
     await fs.mkdir(path.join(process.cwd(), 'scripts/environments/pkgdev/fallback'), { recursive: true })
     await fs.mkdir(path.join(process.cwd(), 'scripts/environments/sysimagecompile/fallback'), { recursive: true })
-    await cp.exec(`julia "+alpha" --project=. ${path.join(process.cwd(), 'src/scripts/juliaprojectcreatescripts/create_ls_project.jl')}`, { cwd: path.join(process.cwd(), 'scripts/environments/languageserver/fallback') })
-    await cp.exec(`julia "+alpha" --project=. ${path.join(process.cwd(), 'src/scripts/juliaprojectcreatescripts/create_pkgdev_project.jl')}`, { cwd: path.join(process.cwd(), 'scripts/environments/pkgdev/fallback') })
-    await cp.exec(`julia "+alpha" --project=. ${path.join(process.cwd(), 'src/scripts/juliaprojectcreatescripts/create_sysimagecompile_project.jl')}`, { cwd: path.join(process.cwd(), 'scripts/environments/sysimagecompile/fallback') })
+    await cp.exec(`julia "+nightly" --project=. ${path.join(process.cwd(), 'src/scripts/juliaprojectcreatescripts/create_ls_project.jl')}`, { cwd: path.join(process.cwd(), 'scripts/environments/languageserver/fallback') })
+    await cp.exec(`julia "+nightly" --project=. ${path.join(process.cwd(), 'src/scripts/juliaprojectcreatescripts/create_pkgdev_project.jl')}`, { cwd: path.join(process.cwd(), 'scripts/environments/pkgdev/fallback') })
+    await cp.exec(`julia "+nightly" --project=. ${path.join(process.cwd(), 'src/scripts/juliaprojectcreatescripts/create_sysimagecompile_project.jl')}`, { cwd: path.join(process.cwd(), 'scripts/environments/sysimagecompile/fallback') })
 
     // Julia 1.0 and 1.1 write backslash in relative paths in Manifest files, which we don't want
-    await replace_backslash_in_manifest(path.join(process.cwd(), 'scripts/environments/languageserver/v1.0'))
-    await replace_backslash_in_manifest(path.join(process.cwd(), 'scripts/environments/languageserver/v1.1'))
     await replace_backslash_in_manifest(path.join(process.cwd(), 'scripts/environments/sysimagecompile/v1.0'))
     await replace_backslash_in_manifest(path.join(process.cwd(), 'scripts/testenvironments/debugadapter/v1.0'))
     await replace_backslash_in_manifest(path.join(process.cwd(), 'scripts/testenvironments/debugadapter/v1.1'))

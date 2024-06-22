@@ -1,6 +1,6 @@
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.0"
+julia_version = "1.10.4"
 manifest_format = "2.0"
 project_hash = "9ddee98f4175ce3934d72d17e69fc38f7697d471"
 
@@ -45,7 +45,14 @@ uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
 version = "0.6.4"
 
 [[deps.LibCURL_jll]]
-deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
+deps = [
+    "Artifacts",
+    "LibSSH2_jll",
+    "Libdl",
+    "MbedTLS_jll",
+    "Zlib_jll",
+    "nghttp2_jll",
+]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
 version = "8.4.0+0"
 
@@ -87,13 +94,42 @@ uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
 
 [[deps.PackageCompiler]]
-deps = ["Artifacts", "Glob", "LazyArtifacts", "Libdl", "Pkg", "Printf", "RelocatableFolders", "TOML", "UUIDs"]
+deps = [
+    "Artifacts",
+    "Glob",
+    "LazyArtifacts",
+    "Libdl",
+    "Pkg",
+    "Printf",
+    "RelocatableFolders",
+    "TOML",
+    "UUIDs",
+    "p7zip_jll",
+]
 path = "../../../packages/PackageCompiler"
 uuid = "9b87118b-4619-50d2-8e1e-99f35a4d4d9d"
-version = "2.1.13"
+version = "2.1.17"
 
 [[deps.Pkg]]
-deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
+deps = [
+    "Artifacts",
+    "Dates",
+    "Downloads",
+    "FileWatching",
+    "LibGit2",
+    "Libdl",
+    "Logging",
+    "Markdown",
+    "Printf",
+    "REPL",
+    "Random",
+    "SHA",
+    "Serialization",
+    "TOML",
+    "Tar",
+    "UUIDs",
+    "p7zip_jll",
+]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 version = "1.10.0"
 

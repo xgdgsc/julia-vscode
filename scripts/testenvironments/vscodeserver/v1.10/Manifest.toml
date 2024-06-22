@@ -1,6 +1,6 @@
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.0"
+julia_version = "1.10.4"
 manifest_format = "2.0"
 project_hash = "d81dddab3c8eda235cbae6d9e9a4958b02cd6033"
 
@@ -36,7 +36,14 @@ uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
 version = "0.6.4"
 
 [[deps.LibCURL_jll]]
-deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
+deps = [
+    "Artifacts",
+    "LibSSH2_jll",
+    "Libdl",
+    "MbedTLS_jll",
+    "Zlib_jll",
+    "nghttp2_jll",
+]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
 version = "8.4.0+0"
 
@@ -81,7 +88,25 @@ uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
 
 [[deps.Pkg]]
-deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
+deps = [
+    "Artifacts",
+    "Dates",
+    "Downloads",
+    "FileWatching",
+    "LibGit2",
+    "Libdl",
+    "Logging",
+    "Markdown",
+    "Printf",
+    "REPL",
+    "Random",
+    "SHA",
+    "Serialization",
+    "TOML",
+    "Tar",
+    "UUIDs",
+    "p7zip_jll",
+]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 version = "1.10.0"
 
@@ -129,7 +154,22 @@ uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 
 [[deps.VSCodeServer]]
-deps = ["Base64", "Dates", "InteractiveUtils", "Logging", "Markdown", "Mmap", "Pkg", "Printf", "Profile", "REPL", "Random", "Sockets", "UUIDs", "Unicode"]
+deps = [
+    "Base64",
+    "Dates",
+    "InteractiveUtils",
+    "Logging",
+    "Markdown",
+    "Mmap",
+    "Pkg",
+    "Printf",
+    "Profile",
+    "REPL",
+    "Random",
+    "Sockets",
+    "UUIDs",
+    "Unicode",
+]
 path = "../../../packages/VSCodeServer"
 uuid = "9f5989ce-84fe-42d4-91ec-6a7a8d53ed0f"
 version = "0.0.0"
