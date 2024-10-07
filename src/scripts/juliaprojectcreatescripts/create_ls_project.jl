@@ -1,6 +1,7 @@
 using Pkg
 
 packages_to_dev = [
+    PackageSpec(path="../../../packages/CancellationTokens"),
     PackageSpec(path="../../../packages/CSTParser"),
     PackageSpec(path="../../../packages/CommonMark"),
     PackageSpec(path="../../../packages/DataStructures"),
@@ -20,6 +21,9 @@ packages_to_dev = [
     PackageSpec(path="../../../packages/Tokenize"),
     PackageSpec(path="../../../packages/URIParser"),
     PackageSpec(path="../../../packages/URIs"),
+    PackageSpec(path="../../../packages/ExceptionUnwrapping"),
+    PackageSpec(path="../../../packages/MacroTools"),
+    PackageSpec(path="../../../packages/Salsa"),
     PackageSpec(path="../../../packages/TestItemDetection"),
 ]
 
@@ -33,6 +37,12 @@ if VERSION>=v"1.6.0"
 else
     push!(packages_to_dev, PackageSpec(path="../../../packages-old/Compat"))
     push!(packages_to_dev, PackageSpec(path="../../../packages-old/Crayons"))
+end
+
+if VERSION>=v"1.8.0"
+    push!(packages_to_dev, PackageSpec(path="../../../packages/AutoHashEquals"))
+else
+    push!(packages_to_dev, PackageSpec(path="../../../packages-old/v1.7/AutoHashEquals"))
 end
 
 Pkg.develop(packages_to_dev)
