@@ -891,7 +891,7 @@ async function executeCell(shouldMove: boolean = false) {
         return
     }
 
-    const code = doc.getText(cellrange)
+    // const code = doc.getText(cellrange)
     const module: string = await modules.getModuleForEditor(ed.document, cellrange.start)
 
     await startREPL(true, false)
@@ -985,35 +985,6 @@ async function executeCell(shouldMove: boolean = false) {
     }
 
 }
-
-
-async function debugRunCell(shouldMove: boolean = false) {
-    telemetry.traceEvent('command-executeCell')
-
-    const ed = vscode.window.activeTextEditor
-    if (ed === undefined) {
-        return
-    }
-
-    const doc = ed.document
-    const selection = ed.selection
-    const cellrange = currentCellRange(ed)
-    if (cellrange === null) {
-        return
-    }
-    const code = doc.getText(cellrange)
-
-    await startREPL(true, false)
-
-    if (shouldMove && ed.selection === selection) {
-        const isJmd = isMarkdownEditor(ed)
-        const nextpos = new vscode.Position(nextCellBorder(doc, cellrange.end.line + 1, true, isJmd) + 1, 0)
-        validateMoveAndReveal(ed, nextpos, nextpos)
-    }
-    const debugCode = 'using Debugger\nbreak_on(:error)\nDebugger.@run begin\n'+code+'\nend'
-    await executeCodeCopyPaste(debugCode,false)
-}
-
 
 async function debugRunCell(shouldMove: boolean = false) {
     telemetry.traceEvent('command-executeCell')

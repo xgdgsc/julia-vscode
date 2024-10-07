@@ -3,7 +3,7 @@ import * as rpc from 'vscode-jsonrpc'
 import { JuliaKernel } from '../notebook/notebookKernel'
 import { TestProcess } from '../testing/testFeature'
 import { registerCommand, wrapCrashReporting } from '../utils'
-import { displayPlot } from './plots'
+import { displayPlotNaive } from './plots'
 import {
     notifyTypeDisplay,
     notifyTypeReplShowInGrid,
@@ -258,7 +258,7 @@ export class WorkspaceFeature {
         this._NotebookNodes.push(node)
         kernel.onCellRunFinished((e) => node.updateReplVariables())
         kernel.onConnected((e) => {
-            kernel._msgConnection.onNotification(notifyTypeDisplay, (params) => displayPlot(params, kernel))
+            kernel._msgConnection.onNotification(notifyTypeDisplay, (params) => displayPlotNaive(params, kernel))
             node.updateReplVariables()
         })
         kernel.onStopped((e) => {
