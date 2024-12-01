@@ -4,7 +4,7 @@ import { assert } from 'console'
 import * as net from 'net'
 import { homedir } from 'os'
 import * as path from 'path'
-import { exec } from 'promisify-child-process'
+// import { exec } from 'promisify-child-process'
 import { v4 as uuidv4 } from 'uuid'
 import * as vscode from 'vscode'
 import * as rpc from 'vscode-jsonrpc/node'
@@ -943,47 +943,47 @@ async function executeCell(shouldMove: boolean = false) {
             }
         })
     }
-    if (vscode.workspace.getConfiguration('julia').get<boolean>('execution.inlineResultsForCellEvaluation') === true) {
-        let currentPos: vscode.Position = ed.document.validatePosition(new vscode.Position(cellrange.start.line , cellrange.start.character + 1))
-        let lastRange = new vscode.Range(0, 0, 0, 0)
-        let shouldBreak: boolean = false
-        while (currentPos.line <= cellrange.end.line) {
-            const [startPos, endPos, nextPos] = await getBlockRange(getVersionedParamsAtPosition(ed.document, currentPos))
-            const lineEndPos = ed.document.validatePosition(new vscode.Position(endPos.line, Infinity))
-            const curRange = cellrange.intersection(new vscode.Range(startPos, lineEndPos))
-            if (curRange === undefined || curRange.isEqual(lastRange)) {
-                break
-            }
-            lastRange = curRange
-            if (curRange.isEmpty) {
-                continue
-            }
-            currentPos = ed.document.validatePosition(nextPos)
-            const code = doc.getText(curRange)
-            g_eval_queue.push({ed: ed, cellrange: curRange, code: code, module: module}).catch(
-                (err) => {
-                    console.error(err)
-                }).then(success => {
-                if (!success) {
-                    shouldBreak = true
-                    g_eval_queue.kill()
-                }
-            })
-            if (shouldBreak) {
-                break
-            }
-        }
-    } else {
-        const code = doc.getText(cellrange)
-        g_eval_queue.push({ed: ed, cellrange: cellrange, code: code, module: module}).catch(
-            (err) => {
-                console.error(err)
-            }).then(success => {
-            if (!success) {
-                g_eval_queue.kill()
-            }
-        })
-    }
+    // if (vscode.workspace.getConfiguration('julia').get<boolean>('execution.inlineResultsForCellEvaluation') === true) {
+    //     let currentPos: vscode.Position = ed.document.validatePosition(new vscode.Position(cellrange.start.line , cellrange.start.character + 1))
+    //     let lastRange = new vscode.Range(0, 0, 0, 0)
+    //     let shouldBreak: boolean = false
+    //     while (currentPos.line <= cellrange.end.line) {
+    //         const [startPos, endPos, nextPos] = await getBlockRange(getVersionedParamsAtPosition(ed.document, currentPos))
+    //         const lineEndPos = ed.document.validatePosition(new vscode.Position(endPos.line, Infinity))
+    //         const curRange = cellrange.intersection(new vscode.Range(startPos, lineEndPos))
+    //         if (curRange === undefined || curRange.isEqual(lastRange)) {
+    //             break
+    //         }
+    //         lastRange = curRange
+    //         if (curRange.isEmpty) {
+    //             continue
+    //         }
+    //         currentPos = ed.document.validatePosition(nextPos)
+    //         const code = doc.getText(curRange)
+    //         g_eval_queue.push({ed: ed, cellrange: curRange, code: code, module: module}).catch(
+    //             (err) => {
+    //                 console.error(err)
+    //             }).then(success => {
+    //             if (!success) {
+    //                 shouldBreak = true
+    //                 g_eval_queue.kill()
+    //             }
+    //         })
+    //         if (shouldBreak) {
+    //             break
+    //         }
+    //     }
+    // } else {
+    //     const code = doc.getText(cellrange)
+    //     g_eval_queue.push({ed: ed, cellrange: cellrange, code: code, module: module}).catch(
+    //         (err) => {
+    //             console.error(err)
+    //         }).then(success => {
+    //         if (!success) {
+    //             g_eval_queue.kill()
+    //         }
+    //     })
+    // }
 
 }
 
@@ -1064,6 +1064,7 @@ async function evaluateBlockOrSelection(shouldMove: boolean = false) {
         setTimeout(() => {
             editor.setDecorations(tempDecoration, [])
         }, 200)
+        // await evaluate(editor,range,text,module)
         g_eval_queue.push({ed: editor, cellrange: range, code: text, module: module}).catch(
             (err) => {
                 console.error(err)
