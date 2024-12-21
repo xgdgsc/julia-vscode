@@ -1055,15 +1055,7 @@ async function evaluateBlockOrSelection(shouldMove: boolean = false) {
             return
         }
 
-        const tempDecoration = vscode.window.createTextEditorDecorationType({
-            backgroundColor: new vscode.ThemeColor('editor.hoverHighlightBackground'),
-            isWholeLine: true
-        })
-        editor.setDecorations(tempDecoration, [range])
 
-        setTimeout(() => {
-            editor.setDecorations(tempDecoration, [])
-        }, 200)
         // await evaluate(editor,range,text,module)
         g_eval_queue.push({ed: editor, cellrange: range, code: text, module: module}).catch(
             (err) => {
@@ -1143,6 +1135,16 @@ async function load_results(editor: vscode.TextEditor) {
 // Returns false if the connection wasn't available
 async function evaluate(editor: vscode.TextEditor, range: vscode.Range, text: string, module: string) {
     telemetry.traceEvent('command-evaluate')
+
+    const tempDecoration = vscode.window.createTextEditorDecorationType({
+        backgroundColor: new vscode.ThemeColor('editor.hoverHighlightBackground'),
+        isWholeLine: true
+    })
+    editor.setDecorations(tempDecoration, [range])
+
+    setTimeout(() => {
+        editor.setDecorations(tempDecoration, [])
+    }, 200)
 
     const section = vscode.workspace.getConfiguration('julia')
     const resultType: string = section.get('execution.resultType')
