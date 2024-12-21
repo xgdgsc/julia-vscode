@@ -1431,80 +1431,80 @@
                     "activeJuliaEnvironment": "language-julia.debug.getActiveJuliaEnvironment"
                 }
             }
+        ],
+        "colors": [
+            {
+                "id": "julia.result.foreground",
+                "description": "Result text color.",
+                "defaults": {
+                    "dark": "editor.foreground",
+                    "light": "editor.foreground",
+                    "highContrast": "editor.foreground",
+                    "highContrastLight": "editor.foreground"
+                }
+            },
+            {
+                "id": "julia.result.background",
+                "description": "Result background color.",
+                "defaults": {
+                    "dark": "#ffffff22",
+                    "light": "#00000011",
+                    "highContrast": "#ffffff22",
+                    "highContrastLight": "#00000011"
+                }
+            },
+            {
+                "id": "julia.result.success",
+                "description": "Accent color for non-error results.",
+                "defaults": {
+                    "dark": "#159eed",
+                    "light": "#159eed",
+                    "highContrast": "#159eed",
+                    "highContrastLight": "#159eed"
+                }
+            },
+            {
+                "id": "julia.result.error",
+                "description": "Accent color for error results.",
+                "defaults": {
+                    "dark": "#d11111",
+                    "light": "#d11111",
+                    "highContrast": "#d11111",
+                    "highContrastLight": "#d11111"
+                }
+            },
+            {
+                "id": "julia.profiler.dispatch",
+                "description": "Inline profiler color for traces with dynamic dispatch.",
+                "defaults": {
+                    "dark": "#cc676732",
+                    "light": "#cc676732",
+                    "highContrast": "#cc676732",
+                    "highContrastLight": "#cc676732"
+                }
+            },
+            {
+                "id": "julia.profiler.gc",
+                "description": "Inline profiler color for traces with GC events/allocations.",
+                "defaults": {
+                    "dark": "#cc994432",
+                    "light": "#cc994432",
+                    "highContrast": "#cc994432",
+                    "highContrastLight": "#cc994432"
+                }
+            },
+            {
+                "id": "julia.profiler.default",
+                "description": "Default inline profiler color.",
+                "defaults": {
+                    "dark": "#4063dd32",
+                    "light": "#4063dd32",
+                    "highContrast": "#4063dd32",
+                    "highContrastLight": "#4063dd32"
+                }
+            }
         ]
     },
-    "colors": [
-        {
-            "id": "julia.result.foreground",
-            "description": "Result text color.",
-            "defaults": {
-                "dark": "editor.foreground",
-                "light": "editor.foreground",
-                "highContrast": "editor.foreground",
-                "highContrastLight": "editor.foreground"
-            }
-        },
-        {
-            "id": "julia.result.background",
-            "description": "Result background color.",
-            "defaults": {
-                "dark": "#ffffff22",
-                "light": "#00000011",
-                "highContrast": "#ffffff22",
-                "highContrastLight": "#00000011"
-            }
-        },
-        {
-            "id": "julia.result.success",
-            "description": "Accent color for non-error results.",
-            "defaults": {
-                "dark": "#159eed",
-                "light": "#159eed",
-                "highContrast": "#159eed",
-                "highContrastLight": "#159eed"
-            }
-        },
-        {
-            "id": "julia.result.error",
-            "description": "Accent color for error results.",
-            "defaults": {
-                "dark": "#d11111",
-                "light": "#d11111",
-                "highContrast": "#d11111",
-                "highContrastLight": "#d11111"
-            }
-        },
-        {
-            "id": "julia.profiler.dispatch",
-            "description": "Inline profiler color for traces with dynamic dispatch.",
-            "defaults": {
-                "dark": "#cc676732",
-                "light": "#cc676732",
-                "highContrast": "#cc676732",
-                "highContrastLight": "#cc676732"
-            }
-        },
-        {
-            "id": "julia.profiler.gc",
-            "description": "Inline profiler color for traces with GC events/allocations.",
-            "defaults": {
-                "dark": "#cc994432",
-                "light": "#cc994432",
-                "highContrast": "#cc994432",
-                "highContrastLight": "#cc994432"
-            }
-        },
-        {
-            "id": "julia.profiler.default",
-            "description": "Default inline profiler color.",
-            "defaults": {
-                "dark": "#4063dd32",
-                "light": "#4063dd32",
-                "highContrast": "#4063dd32",
-                "highContrastLight": "#4063dd32"
-            }
-        }
-    ],
     "scripts": {
         "vscode:prepublish": "webpack --mode production",
         "webpack": "webpack --mode development",
