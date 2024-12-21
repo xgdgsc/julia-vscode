@@ -5,6 +5,7 @@ is_disconnected_exception(err) = false
 is_disconnected_exception(err::InvalidStateException) = err.state === :closed
 is_disconnected_exception(err::Base.IOError) = true
 is_disconnected_exception(err::CompositeException) = all(is_disconnected_exception, err.exceptions)
+is_disconnected_exception(err::ErrorException) = err.msg == "Endpoint is not running, the current state is closed."
 
 function global_err_handler(e, bt, vscode_pipe_name, cloudRole)
     if is_disconnected_exception(e)

@@ -943,47 +943,7 @@ async function executeCell(shouldMove: boolean = false) {
             }
         })
     }
-    // if (vscode.workspace.getConfiguration('julia').get<boolean>('execution.inlineResultsForCellEvaluation') === true) {
-    //     let currentPos: vscode.Position = ed.document.validatePosition(new vscode.Position(cellrange.start.line , cellrange.start.character + 1))
-    //     let lastRange = new vscode.Range(0, 0, 0, 0)
-    //     let shouldBreak: boolean = false
-    //     while (currentPos.line <= cellrange.end.line) {
-    //         const [startPos, endPos, nextPos] = await getBlockRange(getVersionedParamsAtPosition(ed.document, currentPos))
-    //         const lineEndPos = ed.document.validatePosition(new vscode.Position(endPos.line, Infinity))
-    //         const curRange = cellrange.intersection(new vscode.Range(startPos, lineEndPos))
-    //         if (curRange === undefined || curRange.isEqual(lastRange)) {
-    //             break
-    //         }
-    //         lastRange = curRange
-    //         if (curRange.isEmpty) {
-    //             continue
-    //         }
-    //         currentPos = ed.document.validatePosition(nextPos)
-    //         const code = doc.getText(curRange)
-    //         g_eval_queue.push({ed: ed, cellrange: curRange, code: code, module: module}).catch(
-    //             (err) => {
-    //                 console.error(err)
-    //             }).then(success => {
-    //             if (!success) {
-    //                 shouldBreak = true
-    //                 g_eval_queue.kill()
-    //             }
-    //         })
-    //         if (shouldBreak) {
-    //             break
-    //         }
-    //     }
-    // } else {
-    //     const code = doc.getText(cellrange)
-    //     g_eval_queue.push({ed: ed, cellrange: cellrange, code: code, module: module}).catch(
-    //         (err) => {
-    //             console.error(err)
-    //         }).then(success => {
-    //         if (!success) {
-    //             g_eval_queue.kill()
-    //         }
-    //     })
-    // }
+
 
 }
 
